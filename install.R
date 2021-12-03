@@ -1,0 +1,5 @@
+install.packages("tidyverse")
+install.packages("testthat")
+install.packages("devtools")
+library(devtools)
+install_github("ucbds-infra/ottr@stable")

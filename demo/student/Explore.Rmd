@@ -1,0 +1,233 @@
+---
+title: 'A gentle introduction: Explore and analyze data with R'
+output:
+  html_document:
+    #css: style_7.css
+    df_print: paged
+    theme: flatly
+    highlight: breezedark
+    toc: yes
+    toc_float: yes
+    code_download: yes
+---
+
+## **What's in this tutorial?**
+
+In this short tutorial, we'll get to learn and practice some basic functions to help you work easily and intuitively with data. You'll learn how to:
+
+-   Load packages in R
+
+-   Sanity check on our data 
+
+-   Query whether there are missing values 
+
+-   Subset unique rows
+
+-   Keep rows that satisfy your conditions
+
+<p >
+<img src = "../../images/r_learners_sm.jpeg", width= 500>
+
+
+
+Let's get started!
+
+## 1. **Meet the Tidyverse and data**
+
+Before we can get started doing some Data Science, we typically begin by loading packages into our current R environment and importing data.
+
+```{r}
+# Load the Tidyverse
+library(tidyverse)
+library(here)
+```
+
+That's one step down!
+
+```{r}
+# Load the library containing the data set
+penguins <- read_csv("penguins.csv")
+
+# Print the first few rows of the data
+head(penguins)
+```
+
+Sometimes, when we have a lot of columns in our data, it may difficult to get a grip of the data at first sight using `slice_head`
+
+`glimpse` produces a transposed version where columns run down the page, and data runs across. This makes it possible to see every column in a data frame. Into the bargain, it also shows the dimension of the data frame.
+
+```{r}
+penguins %>% 
+  glimpse()
+```
+
+Before beginning your analysis, it's always a good idea to check whether you have any missing values.
+
+```{r}
+# Do we have any missing values?
+penguins %>% 
+  anyNA()
+```
+
+No missing values! Excellent!
+
+
+```{r}
+penguins %>% 
+  head()
+```
+
+We only see penguins of species `Adelie`. Are there any other species of penguins? To answer this, we use a function/verb in dplyr called `distinct()`. `distinct()` only returns the unique rows in our data:
+
+
+```{r}
+# What are the different species of penguins in our data?
+penguins %>% 
+  distinct(species)
+```
+
+Say we wanted to find the islands where our penguins reside in. We would just modify the above code to include `island` instead of species: 
+
+
+
+```{r}
+# What are the different islands in our data?
+penguins %>% 
+  distinct(island)
+```
+
+Aha, 3 islands. Now let's go forth and filter!
+
+
+Now let's go forth and filter!
+
+## 2. filter: keep rows that satisfy your conditions
+
+![](images/dplyr_filter_sm.png){width="500"}
+
+### **Example 1**
+
+Make a subset with only chinstrap penguins.
+
+In the code below, we **filter** the **penguins** data to only keep rows where the entry for **species** exactly matches "Adelie" (case sensitive).
+
+```{r}
+penguins %>% 
+  filter(species == "Adelie")
+```
+
+Easy, right? We may want to save this to a variable name "adelie_penguins". This is how we would go about it.
+
+```{r}
+# Subset data to only obtain Adelie penguins
+adelie_penguins <- penguins %>% 
+  filter(species == "Adelie")
+
+# Print the first few rows of data
+adelie_penguins %>% 
+  head()
+```
+
+Good job!! Give it a try too.
+
+**Question 1: filter** the **penguins** data to only keep rows where the entry for **species** exactly matches "Chinstrap". Save this in a variable name `chinstrap_penguins`
+
+```{r}
+chinstrap_penguins <- penguins %>% 
+  filter(species == "Chinstrap")
+
+chinstrap_penguins %>% 
+  head()
+```
+
+```{r}
+. = ottr::check("tests/Question 1.R")
+```
+
+### **Example 2**
+
+That went well. What if now we wanted to keep rows where species matches "Chinstrap" **OR** "Gentoo"?
+
+We use the "or" operator, `|` (the vertical line) when we want to filter rows based on multiple observations in a specific column.
+
+```{r}
+# Make a subset only containing Chinstrap and Gentoo penguins
+penguins %>% 
+  filter(species == "Chinstrap" | species == "Gentoo")
+```
+
+Now, let's take this a little bit further. What if we wanted to make subsets based on conditions that span different columns? Say we only want to keep observations (rows) where the species is "Gentoo" **AND** the island is "Dream" - a row should only be retained if both of those conditions are met.
+
+There are a number of ways you can write an **and** statement within `filter()`, including:
+
+-   A comma between conditions indicates both must be met (`filter(x == "a", y == "b")`)
+
+-   An ampersand between conditions indicates both must be met (`filter(x == "a" & y == "b")`)
+
+We can create a subset starting from penguins that only contains observations for Gentoo penguins on Dream Island as follows:
+
+```{r}
+penguins %>%
+  filter(species == "Gentoo", island == "Dream") %>% 
+  head()
+```
+
+Give it a try yourself.
+
+**Question 2:** Create a subset from `penguins` containing observations for **female** **Adelie** penguins on **Dream** or **Torgersen** Islands.
+
+```{r}
+penguins_subset <- penguins %>%
+  filter(sex == "female",
+         species == "Adelie") %>%
+  filter(island %in% c("Dream","Torgersen"))
+
+penguins_subset %>% 
+  head()
+```
+
+```{r}
+. = ottr::check("tests/Question 2.R")
+```
+
+## So now you know the basics, where next?
+
+Fantastic! You just did some data wrangling in R. You learnt how to:
+
+-   Load packages in R using `library()`
+
+-   Query whether there are missing values `anyNA()`
+
+-   Subset unique rows using `distinct()`
+
+-   Keep rows that satisfy your conditions using `filter()`
+
+The fun doesn't end here, the Tidyverse has a whole bunch of useful verbs for wrangling data:
+
+-   `select()`: keep or exclude some columns
+
+-   `rename()`: rename columns
+
+-   `relocate()`: move columns around
+
+-   `mutate()`: add a new column
+
+-   `group_by()` + `summarize()`: get summary statistics by group
+
+Here are some great places you can learn all about them:
+
+- [Build a regression model: prepare and visualize data](https://github.com/microsoft/ML-For-Beginners/blob/main/2-Regression/2-Data/solution/R/lesson_2-R.ipynb) Machine Learning for Beginners - A Curriculum by Microsoft Cloud Advocates.
+
+-   [dplyr.tidyverse.org](https://dplyr.tidyverse.org/)
+
+
+-   [R for Data Science](https://r4ds.had.co.nz/) by Hadley Wickham and Garrett Grolemund
+
+
+Happy learning!
+
+```{r}
+library(here)
+library(rmd2jupyter)
+rmd2jupyter("Explore.Rmd")
+```
